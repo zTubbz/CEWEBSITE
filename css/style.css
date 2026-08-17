@@ -1,0 +1,1639 @@
+/* ================================================================
+   CHRISTINE EAGLETON — HEALING TOUCH MASSAGE
+   style.css  |  Mobile-first, Bootstrap 5 companion stylesheet
+   ================================================================
+
+   ACCESSIBILITY NOTES
+   -------------------
+   This stylesheet is tuned for older and low-vision visitors while
+   keeping the calm, hotel-spa character of the design:
+
+   • Base text is 17px and every size is set in rem, so the browser's
+     own text-size setting AND the on-page "Text Size" control both
+     scale the whole page proportionally.
+   • All text/background pairs meet WCAG 2.1 AA (most meet AAA).
+     The muted greys and the gold used for badges were darkened for
+     this reason — the palette reads the same, just holds up.
+   • Body copy is roman, not italic, and capped near 65 characters
+     per line so the eye can find the next line easily.
+   • Interactive targets are at least 44×44px, links in text are
+     underlined, and focus rings are thick and high-contrast.
+   • Motion is removed entirely for visitors who ask for that in
+     their operating system.
+
+   TABLE OF CONTENTS
+   -----------------
+   1.  CSS Variables (colors, fonts)
+   2.  Base / Reset
+   3.  Accessibility utilities (skip link, focus, reduced motion)
+   4.  Typography helpers
+   5.  Header — utility bar & text-size control
+   6.  Navigation
+   7.  Hero Section
+   8.  Buttons
+   9.  Botanical Dividers
+   10. About Section
+   11. Services Section
+   12. Pricing Section
+   13. Testimonials Section
+   14. Contact / Booking Section
+   15. Footer
+   16. Scroll Reveal Animations
+   17. Responsive Overrides
+   18. Print
+   ================================================================ */
+
+
+/* ================================================================
+   1. CSS VARIABLES
+   ================================================================ */
+:root {
+  /* Background shades */
+  --cream:         #FAF6F0;
+  --warm-white:    #FDFAF6;
+  --sand:          #F4EDE4;
+  --sand-deep:     #EDE5D8;
+
+  /* Plant / sage greens
+     --sage-dark is the workhorse "green text" colour. It was
+     lightened-green (#5C7A52, ~4.3:1) and is now ~7.5:1 on cream. */
+  --sage:          #8B9E7C;
+  --sage-dark:     #3F5637;
+  --sage-darker:   #2F4129;
+  --sage-light:    #C4D4B8;
+
+  /* Warm accents
+     --gold stays decorative (borders, dividers). Anything that
+     carries light text sits on --gold-deep instead. */
+  --earth:         #7A5C24;
+  --mauve:         #A07878;
+  --gold:          #C9A96E;
+  --gold-deep:     #7A5C24;
+  --gold-light:    #E8D5A3;
+
+  /* Text — all AA or better on cream/sand backgrounds */
+  --text-dark:     #2E2A22;
+  --text-medium:   #574A3D;
+  --text-light:    #6B5C4E;
+
+  /* Borders
+     --border-soft edges decorative cards. --border-firm outlines real
+     controls (inputs, the menu button) and so must clear 3:1 against
+     the page — WCAG 1.4.11 — hence the deeper taupe. */
+  --border-soft:   #E0D4C6;
+  --border-firm:   #948572;
+
+  /* Focus ring */
+  --focus-ring:    #2F4129;
+
+  /* Measured by main.js so anchor links clear the fixed header */
+  --header-h:      132px;
+}
+
+/* Text-size control: multiplies the root size, and because every
+   size below is in rem, the entire page scales with it. */
+html                          { font-size: 106.25%; } /* 17px */
+html[data-text-size="2"]      { font-size: 120%;    } /* ~19px */
+html[data-text-size="3"]      { font-size: 135%;    } /* ~22px */
+
+
+/* ================================================================
+   2. BASE / RESET
+   ================================================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Lato', sans-serif;
+  background-color: var(--cream);
+  color: var(--text-dark);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.8;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Links inside prose are underlined so they don't rely on colour
+   alone — important for colour-blind and low-vision readers. */
+a {
+  color: var(--sage-dark);
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 0.08em;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+a:hover {
+  color: var(--sage-darker);
+}
+
+/* Anchor targets sit below the fixed header instead of under it */
+section[id] {
+  scroll-margin-top: calc(var(--header-h) + 12px);
+}
+
+/* Shared section padding */
+.section-pad {
+  padding: 88px 0;
+}
+
+/* Grids built as lists keep their meaning for screen readers
+   without looking like bulleted lists. */
+.card-grid {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+
+/* ================================================================
+   3. ACCESSIBILITY UTILITIES
+   ================================================================ */
+
+/* Visible only to screen readers */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip link — hidden until a keyboard user tabs to it */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  z-index: 2000;
+  background-color: var(--sage-dark);
+  color: var(--cream);
+  font-family: 'Lato', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.9rem 1.5rem;
+  border-radius: 0 0 3px 3px;
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+  color: var(--cream);
+}
+
+/* One consistent, unmistakable focus ring everywhere */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Browsers without :focus-visible still get a ring */
+a:focus,
+button:focus {
+  outline-color: var(--focus-ring);
+}
+
+/*
+  Respect the operating-system "reduce motion" setting: no scroll
+  animation, no hover lifts, no smooth scrolling. Content still
+  appears — it simply appears immediately.
+*/
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .service-card:hover,
+  .price-card:hover,
+  .btn-primary-custom:hover,
+  .btn-primary-custom:focus {
+    transform: none !important;
+  }
+}
+
+/* Honour Windows / macOS high-contrast modes */
+@media (forced-colors: active) {
+  .service-card,
+  .price-card,
+  .testimonial-card,
+  .contact-info-box,
+  .custom-input {
+    border: 1px solid CanvasText;
+  }
+}
+
+
+/* ================================================================
+   4. TYPOGRAPHY HELPERS
+   ================================================================ */
+h1, h2, h3, h4, h5 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--text-dark);
+  line-height: 1.25;
+}
+
+/* Small caps label above headings.
+   Enlarged and de-tracked — 11.5px at 0.22em was close to unreadable. */
+.eyebrow {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sage-dark);
+  margin-bottom: 0.6rem;
+}
+
+.section-title {
+  font-size: clamp(2.15rem, 5vw, 3.1rem);
+  font-weight: 400;
+  margin-bottom: 1.1rem;
+}
+
+.section-intro {
+  font-size: 1.2rem;
+  line-height: 1.75;
+  color: var(--text-medium);
+  max-width: 34em;
+  margin: 0 auto;
+}
+
+/* Body copy: roman (not italic), generous leading, and a measure
+   of roughly 65 characters so lines are easy to track. */
+.body-text {
+  color: var(--text-medium);
+  margin-bottom: 1.1rem;
+  font-size: 1.15rem;
+  line-height: 1.85;
+  max-width: 38em;
+}
+
+.body-text strong {
+  color: var(--text-dark);
+  font-weight: 700;
+}
+
+
+/* ================================================================
+   5. HEADER — UTILITY BAR & TEXT-SIZE CONTROL
+   ================================================================ */
+.site-header {
+  background-color: var(--warm-white);
+}
+
+/* Thin bar carrying the phone number and the text-size control —
+   the two things a first-time older visitor most often wants. */
+.utility-bar {
+  background-color: var(--sage-dark);
+  color: var(--cream);
+}
+
+.utility-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  min-height: 52px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.utility-phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 44px;
+  padding: 0.25rem 0.15rem;
+  color: var(--cream);
+  font-family: 'Lato', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+}
+
+.utility-phone svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.utility-phone:hover,
+.utility-phone:focus {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.utility-phone:focus-visible {
+  outline-color: var(--cream);
+}
+
+.text-size-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.text-size-label {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(250, 246, 240, 0.88);
+  margin-right: 4px;
+}
+
+/*
+  Fixed px sizing on purpose: these buttons control the root font
+  size, so they must not grow along with it.
+*/
+.text-size-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid rgba(250, 246, 240, 0.5);
+  border-radius: 2px;
+  color: var(--cream);
+  font-family: 'Cormorant Garamond', serif;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.text-size-btn--1 { font-size: 15px; }
+.text-size-btn--2 { font-size: 19px; }
+.text-size-btn--3 { font-size: 24px; }
+
+.text-size-btn:hover {
+  background-color: rgba(250, 246, 240, 0.18);
+  border-color: var(--cream);
+}
+
+.text-size-btn[aria-pressed="true"] {
+  background-color: var(--cream);
+  border-color: var(--cream);
+  color: var(--sage-dark);
+  font-weight: 600;
+}
+
+.text-size-btn:focus-visible {
+  outline-color: var(--cream);
+}
+
+
+/* ================================================================
+   6. NAVIGATION
+   ================================================================ */
+#mainNav {
+  background-color: rgba(253, 250, 246, 0.97);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-soft);
+  padding: 8px 0;
+  transition: box-shadow 0.3s ease;
+}
+
+.site-header.scrolled #mainNav {
+  box-shadow: 0 2px 24px rgba(46, 42, 34, 0.10);
+}
+
+/* Brand: stacked name + tagline */
+.navbar-brand {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  text-decoration: none;
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+}
+
+.brand-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  letter-spacing: 0.05em;
+}
+
+.brand-sub {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sage-dark);
+}
+
+/* Nav links — bigger type, and tall enough to be an easy target */
+.nav-link {
+  display: flex;
+  align-items: center;
+  min-height: 46px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-medium) !important;
+  padding: 0.5rem 0.9rem !important;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.nav-link:hover,
+.nav-link:focus {
+  color: var(--sage-dark) !important;
+  border-bottom-color: var(--sage);
+}
+
+/* "Book Now" nav CTA */
+.btn-book {
+  justify-content: center;
+  background-color: var(--sage-dark);
+  color: var(--cream) !important;
+  border-radius: 2px;
+  border-bottom-color: transparent !important;
+  padding: 0.5rem 1.4rem !important;
+  margin-left: 0.6rem;
+  transition: background-color 0.2s ease !important;
+}
+
+.btn-book:hover,
+.btn-book:focus {
+  background-color: var(--sage-darker);
+  color: var(--cream) !important;
+}
+
+/* Mobile: collapse menu background */
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    background-color: var(--warm-white);
+    padding: 0.5rem 0.5rem 1rem;
+    border-top: 1px solid var(--border-soft);
+    margin-top: 8px;
+  }
+
+  .nav-link {
+    min-height: 52px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .btn-book {
+    display: inline-flex;
+    margin-left: 0 !important;
+    margin-top: 0.75rem;
+    border-bottom: none;
+  }
+}
+
+/* Toggler: labelled "Menu" and sized as a proper target */
+.navbar-toggler {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 46px;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--border-firm);
+  border-radius: 2px;
+}
+
+.navbar-toggler-text {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-medium);
+}
+
+.navbar-toggler:focus {
+  box-shadow: none;
+}
+
+
+/* ================================================================
+   7. HERO SECTION
+   ================================================================ */
+.hero-section {
+  /* min-height, not height: at large text sizes the hero simply
+     grows rather than clipping its own content. */
+  min-height: 86svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: linear-gradient(160deg, #FDFAF6 0%, #F4EDE4 55%, #EDE5D8 100%);
+  overflow: hidden;
+  padding: calc(var(--header-h) + 3rem) 20px 5rem;
+  text-align: center;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+}
+
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(3rem, 9vw, 5.8rem);
+  font-weight: 400;
+  color: var(--text-dark);
+  margin-bottom: 1.35rem;
+  line-height: 1.12;
+}
+
+/* Roman rather than italic — long italic passages are noticeably
+   harder to read with reduced vision. */
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: var(--text-medium);
+  font-weight: 400;
+  line-height: 1.8;
+  max-width: 30em;
+  margin: 0 auto 2.5rem;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hero-note {
+  font-size: 1.02rem;
+  color: var(--text-medium);
+  margin-top: 1.75rem;
+  margin-bottom: 0;
+}
+
+.hero-note a {
+  color: var(--sage-dark);
+  font-weight: 700;
+}
+
+/* CSS leaf / plant silhouettes flanking the hero */
+.hero-plant {
+  position: absolute;
+  bottom: 0;
+  width: 220px;
+  height: 340px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero-plant--left  { left:  -30px; }
+.hero-plant--right { right: -30px; }
+
+/* Left plant: cluster of soft radial leaf blobs */
+.hero-plant--left {
+  background:
+    radial-gradient(ellipse 28px 90px at 55% 95%, rgba(139,158,124,0.30) 0%, transparent 100%),
+    radial-gradient(ellipse 55px 65px at 28% 65%, rgba(139,158,124,0.22) 0%, transparent 100%),
+    radial-gradient(ellipse 45px 75px at 72% 52%, rgba(139,158,124,0.20) 0%, transparent 100%),
+    radial-gradient(ellipse 38px 58px at 18% 38%, rgba(63,86,55,0.14) 0%, transparent 100%),
+    radial-gradient(ellipse 50px 68px at 82% 28%, rgba(63,86,55,0.12) 0%, transparent 100%);
+}
+
+/* Right plant: mirrored */
+.hero-plant--right {
+  background:
+    radial-gradient(ellipse 28px 90px at 45% 95%, rgba(139,158,124,0.30) 0%, transparent 100%),
+    radial-gradient(ellipse 55px 65px at 72% 65%, rgba(139,158,124,0.22) 0%, transparent 100%),
+    radial-gradient(ellipse 45px 75px at 28% 52%, rgba(139,158,124,0.20) 0%, transparent 100%),
+    radial-gradient(ellipse 38px 58px at 82% 38%, rgba(63,86,55,0.14) 0%, transparent 100%),
+    radial-gradient(ellipse 50px 68px at 18% 28%, rgba(63,86,55,0.12) 0%, transparent 100%);
+}
+
+@media (max-width: 767.98px) {
+  .hero-plant {
+    width: 120px;
+    height: 200px;
+    opacity: 0.7;
+  }
+}
+
+
+/* ================================================================
+   8. BUTTONS
+   ================================================================ */
+.btn-primary-custom,
+.btn-outline-custom {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  border-radius: 2px;
+  padding: 0.9rem 2.2rem;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+}
+
+.btn-primary-custom {
+  background-color: var(--sage-dark);
+  color: var(--cream);
+  border: 2px solid var(--sage-dark);
+  transition: background-color 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary-custom:hover,
+.btn-primary-custom:focus {
+  background-color: var(--sage-darker);
+  border-color: var(--sage-darker);
+  color: var(--cream);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(46, 42, 34, 0.22);
+}
+
+.btn-outline-custom {
+  background: transparent;
+  color: var(--text-dark);
+  border: 2px solid var(--text-dark);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.btn-outline-custom:hover,
+.btn-outline-custom:focus {
+  background-color: var(--text-dark);
+  color: var(--cream);
+}
+
+
+/* ================================================================
+   9. BOTANICAL DIVIDERS
+   ================================================================ */
+
+/* SVG wavy stem with leaf ellipses */
+.botanical-divider {
+  overflow: hidden;
+  padding: 4px 0;
+  line-height: 0;
+}
+
+.botanical-divider svg {
+  width: 100%;
+  height: 60px;
+  display: block;
+}
+
+/* Five small CSS leaf shapes */
+.leaf-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 8px 0;
+}
+
+.leaf {
+  display: inline-block;
+  background-color: var(--sage);
+  border-radius: 50% 0 50% 0;
+  opacity: 0.45;
+}
+
+.leaf--sm   { width: 20px; height: 10px; }
+.leaf--lg   { width: 32px; height: 15px; opacity: 0.55; }
+.leaf--fade { opacity: 0.22; }
+
+
+/* ================================================================
+   10. ABOUT SECTION
+   ================================================================ */
+.about-photo-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dashed ring behind the photo */
+.about-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 310px;
+  height: 310px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(139, 158, 124, 0.5);
+  z-index: 1;
+}
+
+/* Placeholder shown until a real photo is added */
+.photo-placeholder {
+  position: relative;
+  z-index: 2;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--sage-light) 0%, var(--gold-light) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  border: 4px solid var(--cream);
+  box-shadow: 0 8px 30px rgba(46, 42, 34, 0.14);
+}
+
+.photo-initials {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.8rem;
+  font-weight: 400;
+  color: var(--sage-dark);
+  letter-spacing: 0.06em;
+}
+
+/* When a real photo is used, apply this class to the <img> */
+.about-photo {
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--cream);
+  box-shadow: 0 8px 30px rgba(46, 42, 34, 0.14);
+  position: relative;
+  z-index: 2;
+}
+
+/* Credential badge with left green rule */
+.about-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  color: var(--text-medium);
+  border-left: 3px solid var(--sage);
+  padding-left: 1rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0;
+}
+
+.badge-accent {
+  color: var(--mauve);
+  font-size: 1rem;
+}
+
+/* Signed "Christine" at the end of the personal About note */
+.about-signature {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 2rem;
+  color: var(--sage-dark);
+  line-height: 1;
+  margin: 0.25rem 0 0.5rem;
+}
+
+/* Specialty / modality tags under the About text */
+.about-specialties {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 1.6rem;
+  margin-bottom: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.specialty-tag {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sage-dark);
+  background-color: rgba(196, 212, 184, 0.4);
+  border: 1px solid var(--sage);
+  border-radius: 20px;
+  padding: 0.4rem 1rem;
+  white-space: nowrap;
+}
+
+
+/* ================================================================
+   11. SERVICES SECTION
+   ================================================================ */
+.services-bg {
+  background-color: var(--sand);
+}
+
+.service-card {
+  position: relative;
+  background-color: var(--cream);
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+  padding: 2rem 1.75rem;
+  height: 100%;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 32px rgba(46, 42, 34, 0.12);
+}
+
+/* Christine's specialty services get a highlighted border + badge */
+.service-card--specialty {
+  border-color: var(--gold);
+  border-width: 2px;
+  box-shadow: 0 4px 20px rgba(201, 169, 110, 0.16);
+}
+
+/*
+  Replaces the old 45°-rotated corner ribbon. Rotated type is hard
+  to read for anyone, and was cream-on-gold at roughly 1.8:1 — this
+  badge sits flat and passes AA comfortably.
+*/
+.specialty-badge {
+  display: inline-block;
+  background-color: var(--gold-deep);
+  color: var(--cream);
+  font-family: 'Lato', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.9rem;
+  border-radius: 20px;
+  margin-bottom: 1.25rem;
+}
+
+/* Cards without a badge reserve the same space, so icons and titles
+   line up across a row instead of sitting at two different heights. */
+.service-card:not(.service-card--specialty)::before {
+  content: "";
+  display: block;
+  height: calc(0.78rem * 1.4 + 0.6rem);
+  margin-bottom: 1.25rem;
+}
+
+.service-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1.1rem;
+}
+
+.service-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.service-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.65rem;
+  font-weight: 500;
+  margin-bottom: 0.7rem;
+  color: var(--text-dark);
+}
+
+.service-desc {
+  font-size: 1.08rem;
+  color: var(--text-medium);
+  line-height: 1.8;
+  margin: 0;
+}
+
+
+/* ================================================================
+   12. PRICING SECTION
+   ================================================================ */
+.price-card {
+  position: relative;
+  background-color: var(--warm-white);
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+  padding: 2rem 1.6rem;
+  height: 100%;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.price-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(46, 42, 34, 0.11);
+}
+
+/* Service name heading on a price card */
+.price-service-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.75rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  text-align: center;
+  margin-bottom: 1.15rem;
+  padding-bottom: 0.95rem;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+/* Duration + price rows (marked up as a description list) */
+.price-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-bottom: 0;
+}
+
+.price-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.price-row-time {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sage-dark);
+  margin: 0;
+}
+
+.price-row-amount {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.1rem;
+  font-weight: 400;
+  color: var(--text-dark);
+  line-height: 1;
+  margin: 0;
+}
+
+/* Energy Work card (no fixed pricing) */
+.price-card--energy {
+  text-align: center;
+  background: linear-gradient(160deg, var(--warm-white) 0%, var(--sand) 100%);
+  border-color: var(--sage);
+}
+
+.price-card--energy .price-service-name {
+  border-bottom: none;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0;
+}
+
+.price-energy-amount {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.1rem;
+  font-weight: 400;
+  color: var(--sage-dark);
+  line-height: 1.15;
+  margin-bottom: 0.75rem;
+}
+
+.price-label {
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: var(--text-medium);
+  margin: 0;
+}
+
+.pricing-note {
+  font-size: 1.08rem;
+  color: var(--text-medium);
+}
+
+.pricing-note a {
+  font-weight: 700;
+}
+
+
+/* ================================================================
+   13. TESTIMONIALS SECTION
+   ================================================================ */
+.testimonials-bg {
+  background: linear-gradient(155deg, var(--sand-deep) 0%, var(--sand) 100%);
+}
+
+.testimonial-card {
+  background-color: var(--warm-white);
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+  padding: 1.75rem 1.75rem 1.6rem;
+  height: 100%;
+  margin-bottom: 0;
+}
+
+.quote-mark {
+  display: block;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 4.5rem;
+  color: var(--sage);
+  line-height: 0.75;
+  margin-bottom: 0.75rem;
+  user-select: none;
+}
+
+.testimonial-text {
+  font-size: 1.1rem;
+  color: var(--text-medium);
+  line-height: 1.8;
+  margin-bottom: 1.15rem;
+}
+
+.testimonial-text p {
+  margin-bottom: 0;
+}
+
+.testimonial-author {
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--sage-dark);
+  margin: 0;
+}
+
+
+/* ================================================================
+   14. CONTACT / BOOKING SECTION
+   ================================================================ */
+.contact-section {
+  background-color: var(--cream);
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-container {
+  position: relative;
+  z-index: 2;
+}
+
+/* CSS plant blobs in the bottom corners */
+.contact-plant {
+  position: absolute;
+  bottom: 0;
+  width: 200px;
+  height: 280px;
+  pointer-events: none;
+  opacity: 0.28;
+  z-index: 1;
+}
+
+.contact-plant--left {
+  left: 0;
+  background:
+    radial-gradient(ellipse 70px 110px at 38% 88%, rgba(139,158,124,0.65) 0%, transparent 100%),
+    radial-gradient(ellipse 45px 75px at 18% 58%, rgba(63,86,55,0.42) 0%, transparent 100%),
+    radial-gradient(ellipse 55px 85px at 65% 48%, rgba(139,158,124,0.45) 0%, transparent 100%);
+}
+
+.contact-plant--right {
+  right: 0;
+  background:
+    radial-gradient(ellipse 70px 110px at 62% 88%, rgba(139,158,124,0.65) 0%, transparent 100%),
+    radial-gradient(ellipse 45px 75px at 82% 58%, rgba(63,86,55,0.42) 0%, transparent 100%),
+    radial-gradient(ellipse 55px 85px at 35% 48%, rgba(139,158,124,0.45) 0%, transparent 100%);
+}
+
+.contact-subhead {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+}
+
+.form-required-note {
+  font-size: 0.98rem;
+  color: var(--text-medium);
+  margin-bottom: 1.25rem;
+}
+
+.req-star {
+  color: #8B2020;
+  font-weight: 700;
+}
+
+/* Form labels */
+.form-label {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-medium);
+  margin-bottom: 0.45rem;
+  display: block;
+}
+
+.label-optional {
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 0.92rem;
+  color: var(--text-light);
+}
+
+.field-help {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--text-medium);
+  margin-top: 0.4rem;
+}
+
+/* Inputs, selects, textareas — larger type and a taller hit area */
+.custom-input {
+  background-color: var(--warm-white);
+  border: 1px solid var(--border-firm);
+  border-radius: 2px;
+  padding: 0.8rem 1rem;
+  min-height: 54px;
+  font-family: 'Lato', sans-serif;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: var(--text-dark);
+  width: 100%;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  appearance: auto;
+}
+
+textarea.custom-input {
+  min-height: 8rem;
+}
+
+.custom-input:focus {
+  border-color: var(--sage-dark);
+  box-shadow: 0 0 0 3px rgba(63, 86, 55, 0.22);
+  outline: none;
+  background-color: #ffffff;
+}
+
+/* Placeholders are examples only — never the sole instruction.
+   Kept dark enough to actually be legible. */
+.custom-input::placeholder {
+  color: var(--text-light);
+  opacity: 1;
+}
+
+/* Formspree success message — shown by SDK after successful submit */
+[data-fs-success],
+.form-success-msg {
+  display: none; /* SDK controls visibility via inline style */
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.25rem;
+  background-color: rgba(196, 212, 184, 0.4);
+  border: 2px solid var(--sage-dark);
+  border-radius: 2px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--sage-darker);
+  text-align: center;
+}
+
+/* Formspree form-level error — shown by SDK on submission failure */
+[data-fs-error]:not([data-fs-error=""]),
+.form-error-msg {
+  display: none; /* SDK controls visibility */
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.25rem;
+  background-color: rgba(139, 32, 32, 0.07);
+  border: 2px solid #8B2020;
+  border-radius: 2px;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #7A1B1B;
+  text-align: center;
+}
+
+/* Formspree field-level error spans (under individual inputs) */
+.field-error,
+[data-fs-error][data-fs-error]:not(:empty) {
+  display: block;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #7A1B1B;
+  margin-top: 6px;
+}
+
+/* Invalid input highlight set by Formspree SDK via aria-invalid.
+   Thicker border as well as colour, so it doesn't rely on hue. */
+[data-fs-field][aria-invalid="true"] {
+  border-color: #8B2020 !important;
+  border-width: 2px !important;
+  box-shadow: 0 0 0 3px rgba(139, 32, 32, 0.14) !important;
+}
+
+/* Submit button: disabled state while Formspree is sending */
+[data-fs-submit-btn]:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Contact info sidebar */
+.contact-info-box {
+  padding: 2rem;
+  background-color: var(--warm-white);
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+  height: 100%;
+}
+
+.contact-info-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem;
+  margin-bottom: 1.6rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-soft);
+  color: var(--text-dark);
+}
+
+.contact-item {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.6rem;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--text-medium);
+  align-items: flex-start;
+}
+
+.contact-item:last-child {
+  margin-bottom: 0;
+}
+
+.contact-item-icon {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin-top: 5px;
+}
+
+.contact-item-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.contact-item strong {
+  display: block;
+  color: var(--text-dark);
+  margin-bottom: 2px;
+  font-weight: 700;
+}
+
+.contact-note {
+  color: var(--text-light);
+}
+
+/* Phone and email are the two things people reach for — make them
+   unmistakable links with comfortable tap areas. */
+.contact-link {
+  display: inline-block;
+  padding: 0.2rem 0;
+  color: var(--sage-dark);
+  font-weight: 700;
+  text-decoration: underline;
+  overflow-wrap: anywhere;
+}
+
+.contact-link--lg {
+  font-size: 1.3rem;
+  letter-spacing: 0.02em;
+}
+
+.contact-link--email {
+  font-size: 1.02rem;
+}
+
+.contact-link:hover,
+.contact-link:focus {
+  color: var(--sage-darker);
+  background-color: rgba(196, 212, 184, 0.35);
+}
+
+
+/* ================================================================
+   15. FOOTER
+   ================================================================ */
+.site-footer {
+  background-color: var(--text-dark);
+  color: #E4DED4;
+  padding: 60px 0 34px;
+}
+
+.footer-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.9rem;
+  font-weight: 400;
+  letter-spacing: 0.07em;
+  color: #FAF6F0;
+  margin-bottom: 0.3rem;
+}
+
+.footer-sub {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #C4D4B8;
+  margin-bottom: 0.4rem;
+}
+
+.footer-lic {
+  font-size: 0.98rem;
+  color: #CFC8BC;
+  margin-bottom: 1rem;
+}
+
+.footer-contact {
+  font-size: 1.05rem;
+  margin-bottom: 1.5rem;
+}
+
+.footer-contact a {
+  color: #DCE6D2;
+  font-weight: 700;
+  text-decoration: underline;
+  display: inline-block;
+  padding: 0.15rem 0;
+  overflow-wrap: anywhere;
+}
+
+.footer-contact a:hover,
+.footer-contact a:focus {
+  color: #ffffff;
+}
+
+.footer-contact a:focus-visible {
+  outline-color: #E4DED4;
+}
+
+.footer-sep {
+  color: #8B9E7C;
+  margin: 0 0.5rem;
+}
+
+.footer-rule {
+  width: 60px;
+  height: 1px;
+  background-color: rgba(250, 246, 240, 0.3);
+  margin: 0 auto 1.5rem;
+}
+
+.footer-copy {
+  font-size: 0.92rem;
+  color: #B9B1A4;
+  margin: 0;
+}
+
+
+/* ================================================================
+   16. SCROLL REVEAL ANIMATIONS
+   ------------------------------------------------------------
+   The .reveal class is added by JavaScript, so with JS disabled —
+   or with "reduce motion" turned on — every element is simply
+   visible from the start. Content is never hidden by default.
+   ================================================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger delays — applied by JS to card grids */
+.reveal-delay-1 { transition-delay: 0.08s; }
+.reveal-delay-2 { transition-delay: 0.16s; }
+.reveal-delay-3 { transition-delay: 0.24s; }
+.reveal-delay-4 { transition-delay: 0.32s; }
+.reveal-delay-5 { transition-delay: 0.40s; }
+.reveal-delay-6 { transition-delay: 0.48s; }
+
+
+/* ================================================================
+   17. RESPONSIVE OVERRIDES
+   ================================================================ */
+
+/* Tablet (md breakpoint) */
+@media (max-width: 991.98px) {
+  .utility-bar-inner {
+    justify-content: center;
+    gap: 0.5rem 1.25rem;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .section-pad {
+    padding: 64px 0;
+  }
+
+  .hero-section {
+    min-height: 0;
+    padding: calc(var(--header-h) + 2.5rem) 20px 4rem;
+  }
+
+  .about-ring {
+    width: 260px;
+    height: 260px;
+  }
+
+  .text-size-label {
+    display: none;
+  }
+}
+
+/* Mobile (sm and below) */
+@media (max-width: 575.98px) {
+  /*
+    Below 576px the container is fluid and pads 0.75rem, but a .g-5
+    row pulls 1.5rem of negative margin off each side — so the page
+    scrolled ~13px sideways. Matching the gutter to the container
+    padding removes the sideways scroll; the columns stack here
+    anyway, so nothing is lost visually.
+  */
+  .row.g-5 {
+    --bs-gutter-x: 1.5rem;
+  }
+
+  .section-pad {
+    padding: 52px 0;
+  }
+
+  .hero-title {
+    font-size: 2.9rem;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-primary-custom,
+  .btn-outline-custom {
+    width: 100%;
+  }
+
+  .photo-placeholder {
+    width: 200px;
+    height: 200px;
+  }
+
+  .about-ring {
+    width: 240px;
+    height: 240px;
+  }
+
+  .photo-initials {
+    font-size: 2.2rem;
+  }
+
+  .price-card,
+  .service-card,
+  .contact-info-box {
+    padding: 1.75rem 1.35rem;
+  }
+
+  /* The tagline is a single long line; unchecked it pushes the whole
+     page wider than a phone screen. Let it wrap and sit tighter. */
+  /* Keeps the brand and the Menu button on one line, so the fixed
+     header doesn't eat a third of a phone screen. */
+  .navbar-brand {
+    max-width: 54vw;
+    margin-right: 0.5rem;
+  }
+
+  .brand-name {
+    font-size: 1.3rem;
+  }
+
+  .brand-sub {
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    white-space: normal;
+  }
+
+  /* Trimmed just enough that the phone number and the text-size
+     buttons share one row — a second row would cost ~50px of fixed
+     header on every screen. */
+  .utility-phone {
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+  }
+
+  .utility-bar-inner {
+    gap: 0.5rem 0.75rem;
+  }
+}
+
+
+/* ================================================================
+   18. PRINT
+   ------------------------------------------------------------
+   Many visitors in this audience print a page to keep the phone
+   number and prices by the telephone. Black on white, no chrome.
+   ================================================================ */
+@media print {
+  html { font-size: 100%; }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .site-header,
+  .skip-link,
+  .hero-plant,
+  .contact-plant,
+  .botanical-divider,
+  .leaf-divider,
+  #contactForm,
+  .contact-subhead,
+  .form-required-note,
+  .navbar-toggler {
+    display: none !important;
+  }
+
+  .hero-section {
+    min-height: 0;
+    padding: 0 0 1rem;
+    background: none;
+  }
+
+  .section-pad { padding: 1rem 0; }
+
+  .service-card,
+  .price-card,
+  .testimonial-card,
+  .contact-info-box {
+    border: 1px solid #999;
+    box-shadow: none;
+    break-inside: avoid;
+  }
+
+  .site-footer {
+    background: none;
+    color: #000;
+    border-top: 1px solid #999;
+  }
+
+  .footer-name,
+  .footer-sub,
+  .footer-lic,
+  .footer-contact a,
+  .footer-copy {
+    color: #000;
+  }
+
+  a[href^="tel:"]::after,
+  a[href^="mailto:"]::after {
+    content: "";
+  }
+}
